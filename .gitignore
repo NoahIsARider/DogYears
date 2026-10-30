@@ -1,0 +1,16 @@
+node_modules/
+dist/
+release/
+deliverables/
+reference/
+screenshots/*.tmp
+
+# Runtime art: only the asset the game loads is tracked.
+public/models/*.glb
+!public/models/DogYears_ArtPass_Hero.glb
+
+*.log
+.verify_story.log
+.vite.log
+.DS_Store
+Thumbs.db

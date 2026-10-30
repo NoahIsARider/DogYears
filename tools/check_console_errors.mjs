@@ -1,0 +1,22 @@
+import {chromium} from 'file:///C:/Users/Lenovo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
+const URL=process.argv[2]||'http://127.0.0.1:5174';
+const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',args:['--enable-webgl','--ignore-gpu-blocklist']});
+const page=await browser.newPage({viewport:{width:1440,height:960}});
+const errs=[];
+page.on('pageerror',e=>errs.push('pageerror: '+e.message));
+page.on('console',m=>{if(m.type()==='error')errs.push('console: '+m.text())});
+await page.goto(URL,{waitUntil:'domcontentloaded'});
+await page.waitForFunction(()=>dogyears?.ready,null,{timeout:120000});
+console.log('ready, errors before begin:',errs.length);
+await page.click('#begin');
+await page.waitForFunction(()=>dogyears.mode==='house');
+await page.waitForTimeout(9000);
+const uniq=[...new Set(errs)];
+console.log('unique errors after walking:',uniq.length);
+for(const e of uniq.slice(0,12))console.log(' -',e.slice(0,160));
+const stack=await page.evaluate(()=>{
+ const el=document.querySelector('#memory-line');
+ return {memoryLine:!!el,memoryHint:!!document.querySelector('#memory-hint'),prompt:!!document.querySelector('#prompt'),counter:!!document.querySelector('#counter'),dayCard:!!document.querySelector('#day-card')};
+});
+console.log('dom',JSON.stringify(stack));
+await browser.close();

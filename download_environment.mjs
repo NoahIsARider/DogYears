@@ -1,0 +1,4 @@
+import fs from 'node:fs/promises';
+const ids=['autumn_field_puresky','autumn_hockey','autumn_forest_04'];
+await fs.mkdir('public/environment',{recursive:true});
+for(const id of ids){try{const r=await fetch('https://api.polyhaven.com/files/'+id,{signal:AbortSignal.timeout(30000)});if(!r.ok)continue;const m=await r.json();const f=m.hdri?.['1k']?.hdr||m.hdri?.['2k']?.hdr;if(!f)continue;const data=await fetch(f.url,{signal:AbortSignal.timeout(120000)});if(!data.ok)continue;await fs.writeFile('public/environment/house_afternoon.hdr',Buffer.from(await data.arrayBuffer()));await fs.writeFile('public/environment/source.json',JSON.stringify({id,source:'https://polyhaven.com/a/'+id,license:'CC0',url:f.url},null,2));console.log('ENVIRONMENT',id,f.size,'public/environment/house_afternoon.hdr');break}catch(e){console.log(id,e.message)}}
