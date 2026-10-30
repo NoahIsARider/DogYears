@@ -7,13 +7,22 @@ A playable first-person narrative game about the afternoons after a loss.
 <td><img src="screenshots/01-title.jpg" alt="Title screen in the hallway"></td>
 <td><img src="screenshots/02-kitchen.jpg" alt="The kitchen in afternoon light"></td>
 </tr>
+</table>
+
+![A memory line drawn into the room](screenshots/03-memory-text.jpg)
+
+<table>
 <tr>
+<td><img src="screenshots/05-miniature.jpg" alt="The unfinished miniature on the work table"></td>
 <td><img src="screenshots/04-bedroom.jpg" alt="The bedroom"></td>
-<td><img src="screenshots/06-garden.jpg" alt="The back garden"></td>
+</tr>
+<tr>
+<td><img src="screenshots/07-phone.jpg" alt="The phone thread with Mara"></td>
+<td><img src="screenshots/06-garden.jpg" alt="The back garden and the path out"></td>
 </tr>
 </table>
 
-![A memory line written into the room](screenshots/03-memory-text.jpg)
+![An ending](screenshots/08-ending.jpg)
 
 Open **http://localhost:5174/** while the local server is running. To start the built version later, run `pnpm build` once and then double-click **启动游戏.cmd** (requires Node.js). All player-facing text is English. There is no model-viewer sidebar or room-selection interface in the game.
 
