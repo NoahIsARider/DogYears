@@ -12,7 +12,7 @@ The target is a lived-in house where afternoon light almost enters, interrupted 
 
 ## Typography
 
-Narrative lines use bold Caveat handwriting in dark charcoal. A very restrained warm edge preserves the strokes against dark timber and foliage. Lines occupy world space near the current object or action, with depth occlusion and parallax. They are brief and replace one another. Chapter cards finish fading before the opening thought appears. No task paragraph or progress bar sits over the scene.
+Narrative lines use Mansalva, a dense crowded hand, in dark charcoal. A very restrained warm edge preserves the strokes against dark timber and foliage. Lines occupy world space near the current object or action, with depth occlusion and parallax. They are brief and replace one another. Chapter cards finish fading before the opening thought appears. No task paragraph or progress bar sits over the scene.
 
 The pause/settings screens and phone retain functional interfaces. Their contents, like the rest of the game, are English. Font files and OFL licenses ship with the game.
 
