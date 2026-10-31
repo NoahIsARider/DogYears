@@ -24,6 +24,22 @@ A playable first-person narrative game about the afternoons after a loss.
 
 ![An ending](screenshots/08-ending.jpg)
 
+## Watching it
+
+<table>
+<tr>
+<td><img src="screenshots/09-interlude-trail.gif" alt="The hunter walking the wet trail in the first forest film"></td>
+<td><img src="screenshots/10-interlude-deer.gif" alt="The hunter and a grazing deer past the gate in the seventh film"></td>
+</tr>
+</table>
+
+Two of the seven interludes, captured from the game. The complete recordings are attached to
+[release v0.4.0](https://github.com/NoahIsARider/DogYears/releases/tag/v0.4.0):
+a [twenty-scene playthrough](https://github.com/NoahIsARider/DogYears/releases/download/v0.4.0/DogYears-playthrough-720p.mp4)
+that runs 21 minutes and includes every film, and the
+[seven films on their own](https://github.com/NoahIsARider/DogYears/releases/download/v0.4.0/all-seven-interludes-720p.mp4)
+with their sound. GitHub does not play MP4 files inside a README, so the films are linked rather than embedded.
+
 Open **http://localhost:5174/** while the local server is running. To start the built version later, run `pnpm build` once and then double-click **Start DogYears.cmd** (requires Node.js). All player-facing text is English. There is no model-viewer sidebar or room-selection interface in the game.
 
 The transparent full-body deer desktop icon is bundled at `dist/icons/DogYears.ico`. To apply it to a Windows shortcut, open the shortcut's Properties, choose Change Icon and select that ICO file.
