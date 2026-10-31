@@ -2,7 +2,13 @@ import bpy,os,math,random,json,contextlib,io
 import numpy as np
 from math import pi,sin,cos
 from mathutils import Vector
-ROOT=os.path.dirname(os.path.abspath(__file__));OUT=os.path.join(ROOT,'deliverables');s=bpy.context.scene
+def _repo_root(start):
+    p=os.path.dirname(os.path.abspath(start))
+    while not os.path.exists(os.path.join(p,'package.json')) and os.path.dirname(p)!=p:
+        p=os.path.dirname(p)
+    return p
+
+ROOT=_repo_root(__file__);OUT=os.path.join(ROOT,'deliverables');s=bpy.context.scene
 art=bpy.data.collections['10 Art direction | Poly Haven CC0'];random.seed(49)
 blue=bpy.data.materials['Art | scanned faded blue linen'];ivory=bpy.data.materials['Art | scanned washed ivory linen']
 def solid(name,color,rough=.7,metal=0):

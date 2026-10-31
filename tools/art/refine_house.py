@@ -1,7 +1,13 @@
 import bpy,math,random,os
 from mathutils import Vector,Matrix
 from math import pi,sin,cos
-ROOT=os.path.dirname(os.path.abspath(__file__));OUT=os.path.join(ROOT,'deliverables')
+def _repo_root(start):
+    p=os.path.dirname(os.path.abspath(start))
+    while not os.path.exists(os.path.join(p,'package.json')) and os.path.dirname(p)!=p:
+        p=os.path.dirname(p)
+    return p
+
+ROOT=_repo_root(__file__);OUT=os.path.join(ROOT,'deliverables')
 scene=bpy.context.scene;collections={c.name:c for c in scene.collection.children};current=collections['03 Kitchen']
 source=open(os.path.join(ROOT,'build_house.py'),encoding='utf-8').read()
 exec(source[source.index('def put'):source.index('# Architectural shell')])

@@ -1,5 +1,11 @@
 import bpy,os,json
-ROOT=os.path.dirname(os.path.abspath(__file__));OUT=os.path.join(ROOT,'deliverables');s=bpy.context.scene
+def _repo_root(start):
+    p=os.path.dirname(os.path.abspath(start))
+    while not os.path.exists(os.path.join(p,'package.json')) and os.path.dirname(p)!=p:
+        p=os.path.dirname(p)
+    return p
+
+ROOT=_repo_root(__file__);OUT=os.path.join(ROOT,'deliverables');s=bpy.context.scene
 os.makedirs(os.path.join(ROOT,'public','models'),exist_ok=True)
 # Third pass: finer rain traces, more readable details within the dark interior.
 for o in s.objects:

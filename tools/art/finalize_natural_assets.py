@@ -1,5 +1,11 @@
 import bpy,os,contextlib,io
-ROOT=os.path.dirname(os.path.abspath(__file__));OUT=os.path.join(ROOT,'deliverables');s=bpy.context.scene
+def _repo_root(start):
+    p=os.path.dirname(os.path.abspath(start))
+    while not os.path.exists(os.path.join(p,'package.json')) and os.path.dirname(p)!=p:
+        p=os.path.dirname(p)
+    return p
+
+ROOT=_repo_root(__file__);OUT=os.path.join(ROOT,'deliverables');s=bpy.context.scene
 for o in s.objects:
  if o.type!='MESH' or not o.name.startswith(('Natural foliage','Natural bark')):continue
  for p in o.data.polygons:p.use_smooth=True

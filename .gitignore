@@ -20,3 +20,4 @@ desktop-app/node_modules/
 desktop-app/dist/
 release/desktop/
 .asar.txt
+__pycache__/

@@ -1,7 +1,13 @@
 import bpy,os,math,random,contextlib,io
 from math import pi,sin,cos
 from mathutils import Vector
-ROOT=os.path.dirname(os.path.abspath(__file__));OUT=os.path.join(ROOT,'deliverables');s=bpy.context.scene
+def _repo_root(start):
+    p=os.path.dirname(os.path.abspath(start))
+    while not os.path.exists(os.path.join(p,'package.json')) and os.path.dirname(p)!=p:
+        p=os.path.dirname(p)
+    return p
+
+ROOT=_repo_root(__file__);OUT=os.path.join(ROOT,'deliverables');s=bpy.context.scene
 random.seed(1949)
 back=bpy.data.collections.new('09 Garden depth | ridges and forest');s.collection.children.link(back)
 for o in list(s.objects):

@@ -1,7 +1,7 @@
 import {chromium} from 'file:///C:/Users/Lenovo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
 import {mkdir,writeFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
-import {newGame} from './src/game.js';import {CHAPTERS} from './src/story.js';
+import {newGame} from '../../src/game.js';import {CHAPTERS} from '../../src/story.js';
 const OUT='deliverables/forest-saga';await mkdir(OUT,{recursive:true});const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',args:['--enable-webgl','--ignore-gpu-blocklist']}),page=await browser.newPage({viewport:{width:1440,height:960}}),errors=[],checks=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400&&!r.url().endsWith('favicon.ico'))errors.push(`${r.status()} ${r.url()}`);});
 const mode=(name,timeout=15000)=>page.waitForFunction(n=>dogyears.mode===n,name,{timeout});
 async function load(){await page.waitForFunction(()=>window.dogyears?.ready,null,{timeout:120000});await page.click('#begin');}

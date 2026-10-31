@@ -2,7 +2,13 @@ import bpy, math, random, os, json
 from mathutils import Vector
 from math import sin, cos, pi
 random.seed(49)
-ROOT=os.path.dirname(os.path.abspath(__file__))
+def _repo_root(start):
+    p=os.path.dirname(os.path.abspath(start))
+    while not os.path.exists(os.path.join(p,'package.json')) and os.path.dirname(p)!=p:
+        p=os.path.dirname(p)
+    return p
+
+ROOT=_repo_root(__file__)
 OUT=os.path.join(ROOT,'deliverables'); os.makedirs(OUT,exist_ok=True)
 scene=bpy.data.scenes.new('DogYears | The waiting house')
 bpy.context.window.scene=scene

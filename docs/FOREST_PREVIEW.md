@@ -43,11 +43,11 @@ INDIKA was studied as a reference for deliberate pixel shapes, quiet tonal layer
 ## Verification and recordings
 
 - node --test tests/*.test.mjs covers the household story plus all seven forest timelines, continuous floor contact, valid poses, rooted coordinates, both board attempts, the successful tie, the final deer freeze, transparent ICO structure and transition save normalization.
-- node verify_interludes.mjs captures twenty-three selected moments across all seven films and tests pause, skip, absence of visible text and root stability by comparing actual rendered pixels after a camera shift.
-- node verify_interlude_flow.mjs exercises the real bed UI, all seven film transitions, muted playback, pause, skipping, reloading during a film, reloading after completion and the final ending. Its isolated fixture starts with household memories completed; it is an integration test, not a claim of replaying the unchanged twenty house memories.
-- node record_interludes.mjs records all seven running films at actual speed with audio. Individual MP4s and the complete reel are under deliverables/forest-saga. The export uses integer 4× scaling and entry/exit fades matching the game presentation.
-- node record_interludes.mjs --only 2 can replace the second episode recording after a visual refinement and rebuild the combined reel without replaying unrelated films.
+- node tools/verify/verify_interludes.mjs captures twenty-three selected moments across all seven films and tests pause, skip, absence of visible text and root stability by comparing actual rendered pixels after a camera shift.
+- node tools/verify/verify_interlude_flow.mjs exercises the real bed UI, all seven film transitions, muted playback, pause, skipping, reloading during a film, reloading after completion and the final ending. Its isolated fixture starts with household memories completed; it is an integration test, not a claim of replaying the unchanged twenty house memories.
+- node tools/build/record_interludes.mjs records all seven running films at actual speed with audio. Individual MP4s and the complete reel are under deliverables/forest-saga. The export uses integer 4× scaling and entry/exit fades matching the game presentation.
+- node tools/build/record_interludes.mjs --only 2 can replace the second episode recording after a visual refinement and rebuild the combined reel without replaying unrelated films.
 
-node record_wildlife_saga.mjs updates the six films containing wildlife at actual speed and retains the unchanged fifth film. It compares the last film's canvas pixels at seconds 72 and 77 to verify the freeze. node verify_wildlife_icon.mjs checks the visible deer, the wordless final image and icon transparency in the browser.
+node tools/build/record_wildlife_saga.mjs updates the six films containing wildlife at actual speed and retains the unchanged fifth film. It compares the last film's canvas pixels at seconds 72 and 77 to verify the freeze. node tools/verify/verify_wildlife_icon.mjs checks the visible deer, the wordless final image and icon transparency in the browser.
 
-The current built game is under dist; package_game.mjs includes all forest assets, transparent deer icons and both preview pages in release/DogYears.
+The current built game is under dist; tools/build/package_game.mjs includes all forest assets, transparent deer icons and both preview pages in release/DogYears.

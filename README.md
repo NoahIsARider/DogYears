@@ -59,7 +59,7 @@ electron .                              # run it
 npm run package                         # release/desktop/DogYears-win32-x64
 ```
 
-`node verify_desktop.mjs` launches the packaged exe over the DevTools protocol and checks that the
+`node tools/verify/verify_desktop.mjs` launches the packaged exe over the DevTools protocol and checks that the
 window opens, the glTF and the forest sprite manifest are served, walking mode is reachable, the
 pause menu writes a save and a reload restores it. The packaged Windows folder is attached to the
 GitHub releases; the Electron runtime makes it about 400 MB unpacked, which is why it is not in the
@@ -105,7 +105,7 @@ The house has connected rooms and a walkable back garden. The scenery includes a
 
 - `index.html`, `src/` — the game. `src/main.js` runs the flow and the quiet interface, `src/story.js` holds the screenplay, `src/game.js` the narrative state and the ending rules, `src/world.js`, `src/memories.js`, `src/controls.js`, `src/audio.js` and `src/spatial-text.js` render the house, the tactile memory actions, navigation, local sound and the spatial type.
 - `public/fonts/` — Cormorant Garamond, Mansalva and their OFL licences.
-- `public/models/DogYears_ArtPass_Hero.glb` — the runtime art asset, with the furniture, the detailed architectural miniature and the exterior scenery. Compressed maps keep 2k surfaces on hero objects and 1k on small props. `validate_art.mjs` checks the exported image bindings; `repair_glb_textures.mjs` restores artist roughness maps affected by Blender's WebP channel-packing exporter.
+- `public/models/DogYears_ArtPass_Hero.glb` — the runtime art asset, with the furniture, the detailed architectural miniature and the exterior scenery. Compressed maps keep 2k surfaces on hero objects and 1k on small props. `node tools/build/validate_art.mjs` checks the exported image bindings; `node tools/build/repair_glb_textures.mjs` restores artist roughness maps affected by Blender's WebP channel-packing exporter.
 - `public/environment/`, `public/art/` — the photographed HDR environment and the watercolour hung in the house.
 - `screenshots/` — the running-game captures used above.
 - `THIRD_PARTY_ART.md` — model, material and environment credits and licences.
@@ -114,8 +114,13 @@ The house has connected rooms and a walkable back garden. The scenery includes a
 - `tests/` — narrative state, save migration, discovery and forest timeline unit tests.
 - `docs/` — story direction and the notes for each revision.
 - `desktop-app/` — the Electron shell (`main.cjs` plus its own `package.json`); `dist/` and `node_modules/` inside it are build output.
-- `tools/` — the type comparison harness and asset helpers.
-- `serve.mjs`, `package_game.mjs`, `Start DogYears.cmd`, `Start Viewer.cmd`, `Start DogYears.vbs` — the local static server, the two Windows launchers and the packaging step for `release/DogYears`.
+- `tools/verify/` — the browser and unit checks: the story playthrough, the art and font checks,
+  the interlude flow, the packaged build and the desktop shell.
+- `tools/build/` — packaging, recording and asset scripts (`package_game.mjs`, `record_*.mjs`,
+  the texture downloads and `validate_art.mjs`).
+- `tools/art/` — the Blender scripts that generate and polish the house, garden and exports.
+- `tools/` itself — the one-off harnesses for type comparison, forest sprite building and README shots.
+- `serve.mjs`, `Start DogYears.cmd`, `Start Viewer.cmd`, `Start DogYears.vbs` — the local static server and the two Windows launchers.
 
 The Blender sources (`DogYears_ArtPass.blend` and the earlier house and game scenes), the downloaded third-party scans and the superseded GLB exports are not tracked here. They are large binary working files that live beside the repository on the build machine. Everything needed to run the game and to rebuild its JavaScript is in this repository.
 
@@ -123,13 +128,13 @@ The Blender sources (`DogYears_ArtPass.blend` and the earlier house and game sce
 
 `pnpm install`, `pnpm dev`, `pnpm build`, `pnpm test`.
 
-`node verify_story.mjs` plays all twenty scenes in order using ordinary keyboard movement, real action durations and chapter transitions. It also checks disposed-object anchors, save/reload, asking Mara for help and the final arrival. `node verify_art.mjs` checks the running art asset, room views, spatial text bounds, fonts and environment lighting. `node verify_game.mjs --metrics` records frame-time samples. The older default game script predates chapter gating; use the story script for current progression coverage. Browser scripts use this machine's bundled Playwright runtime and installed Chrome; adjust their paths on another machine.
+`node tools/verify/verify_story.mjs` plays all twenty scenes in order using ordinary keyboard movement, real action durations and chapter transitions. It also checks disposed-object anchors, save/reload, asking Mara for help and the final arrival. `node tools/verify/verify_art.mjs` checks the running art asset, room views, spatial text bounds, fonts and environment lighting. `node tools/verify/verify_game.mjs --metrics` records frame-time samples. The older default game script predates chapter gating; use the story script for current progression coverage. Browser scripts use this machine's bundled Playwright runtime and installed Chrome; adjust their paths on another machine.
 
-For a separate built-game server, run `node serve.mjs --port 5175`; browser checks accept `--url http://127.0.0.1:5175`. `verify_story.mjs --hero-only` replays the fifth- and sixth-day miniature scenes, including packing, unpacking and the animated door. `node package_game.mjs` packages the current build under `release/DogYears`, keeping obsolete model exports out of that folder. `dist/` is not tracked, so run `pnpm build` once before using `Start DogYears.cmd`.
+For a separate built-game server, run `node serve.mjs --port 5175`; browser checks accept `--url http://127.0.0.1:5175`. `node tools/verify/verify_story.mjs --hero-only` replays the fifth- and sixth-day miniature scenes, including packing, unpacking and the animated door. `node tools/build/package_game.mjs` packages the current build under `release/DogYears`, keeping obsolete model exports out of that folder. `dist/` is not tracked, so run `pnpm build` once before using `Start DogYears.cmd`.
 
-`RECORD_DIR=deliverables/playthrough node verify_story.mjs --url http://127.0.0.1:5175` runs the same twenty-scene playthrough and also writes a video of it, including every forest interlude at its real duration. The recording is WebM from the bundled Playwright browser and needs `npx playwright install ffmpeg` once.
+`RECORD_DIR=deliverables/playthrough node tools/verify/verify_story.mjs --url http://127.0.0.1:5175` runs the same twenty-scene playthrough and also writes a video of it, including every forest interlude at its real duration. The recording is WebM from the bundled Playwright browser and needs `npx playwright install ffmpeg` once.
 
-`node record_interludes.mjs` re-records the films on their own at four times the native canvas size; `node record_forest.mjs` and `node record_wildlife_saga.mjs` cover the earlier preview and the wildlife sheets.
+`node tools/build/record_interludes.mjs` re-records the films on their own at four times the native canvas size; `node tools/build/record_forest.mjs` and `node tools/build/record_wildlife_saga.mjs` cover the earlier preview and the wildlife sheets.
 
 Blender renders are material reviews. Delivery screenshots come from the running game because its real-time lighting differs.
 

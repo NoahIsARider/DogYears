@@ -1,6 +1,12 @@
 import bpy,os,math,random
 from mathutils import Vector
-ROOT=os.path.dirname(os.path.abspath(__file__));OUT=os.path.join(ROOT,'deliverables')
+def _repo_root(start):
+    p=os.path.dirname(os.path.abspath(start))
+    while not os.path.exists(os.path.join(p,'package.json')) and os.path.dirname(p)!=p:
+        p=os.path.dirname(p)
+    return p
+
+ROOT=_repo_root(__file__);OUT=os.path.join(ROOT,'deliverables')
 bpy.ops.wm.open_mainfile(filepath=os.path.join(OUT,'DogYears_House.blend'))
 s=bpy.context.scene
 # Faded warm greys, not blue night. Keep the wear and the old-house material detail.

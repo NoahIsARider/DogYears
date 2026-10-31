@@ -2,7 +2,13 @@ import bpy,os,math,json,random,contextlib,io
 import numpy as np
 from mathutils import Vector,Matrix
 from math import pi,sin,cos
-ROOT=os.path.dirname(os.path.abspath(__file__));OUT=os.path.join(ROOT,'deliverables');ASSETS=os.path.join(ROOT,'reference','assets');scene=bpy.context.scene
+def _repo_root(start):
+    p=os.path.dirname(os.path.abspath(start))
+    while not os.path.exists(os.path.join(p,'package.json')) and os.path.dirname(p)!=p:
+        p=os.path.dirname(p)
+    return p
+
+ROOT=_repo_root(__file__);OUT=os.path.join(ROOT,'deliverables');ASSETS=os.path.join(ROOT,'reference','assets');scene=bpy.context.scene
 random.seed(49)
 art=bpy.data.collections.new('10 Art direction | Poly Haven CC0');scene.collection.children.link(art)
 def bounds(obs):

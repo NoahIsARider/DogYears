@@ -2,7 +2,13 @@ import bpy,os,math,random,contextlib,io
 import numpy as np
 from math import sin,cos,pi
 from mathutils import Vector
-ROOT=os.path.dirname(os.path.abspath(__file__));OUT=os.path.join(ROOT,'deliverables');s=bpy.context.scene
+def _repo_root(start):
+    p=os.path.dirname(os.path.abspath(start))
+    while not os.path.exists(os.path.join(p,'package.json')) and os.path.dirname(p)!=p:
+        p=os.path.dirname(p)
+    return p
+
+ROOT=_repo_root(__file__);OUT=os.path.join(ROOT,'deliverables');s=bpy.context.scene
 random.seed(7149);col=bpy.data.collections.get('09 Garden depth | ridges and forest')
 # Replace every previous crown/silhouette, not merely cover primitive shapes with more detail.
 for o in list(col.objects):
