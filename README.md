@@ -63,7 +63,8 @@ npm run package                         # release/desktop/DogYears-win32-x64
 window opens, the glTF and the forest sprite manifest are served, walking mode is reachable, the
 pause menu writes a save and a reload restores it. The packaged Windows folder is attached to the
 GitHub releases; the Electron runtime makes it about 400 MB unpacked, which is why it is not in the
-repository.
+repository. The current build is [release v0.5.0](https://github.com/NoahIsARider/DogYears/releases/tag/v0.5.0),
+which also carries the runtime glTF and the recorded playthrough.
 
 ## Playing
 
