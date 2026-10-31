@@ -1,0 +1,12 @@
+import {chromium} from 'file:///C:/Users/Lenovo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
+import {writeFile,mkdir} from 'node:fs/promises';
+import {spawn} from 'node:child_process';
+const OUT='deliverables/forest-v3';await mkdir(OUT,{recursive:true});
+const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'}),page=await browser.newPage({viewport:{width:1920,height:1080}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+try{
+ await page.goto('http://127.0.0.1:5180/forest.html');await page.waitForFunction(()=>window.forest?.ready);await page.click('#scene');await page.evaluate(async()=>{await forest.audio.unlock();forest.enter();const stream=document.querySelector('#scene').captureStream(30);for(const track of forest.audio.recording.stream.getAudioTracks())stream.addTrack(track);window.__videoChunks=[];window.__video=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9,opus',videoBitsPerSecond:2200000});window.__video.ondataavailable=e=>{if(e.data.size)__videoChunks.push(e.data);};window.__video.start();});
+ console.log('RECORDING FULL 94-SECOND INTERLUDE');await page.waitForFunction(()=>forest.mode==='ended',{},{timeout:125000});
+ const data=await page.evaluate(()=>new Promise(resolve=>{__video.onstop=()=>{const r=new FileReader();r.onload=()=>resolve(r.result.split(',')[1]);r.readAsDataURL(new Blob(__videoChunks,{type:'video/webm'}));};__video.stop();}));await writeFile(`${OUT}/first-interlude.webm`,Buffer.from(data,'base64'));await page.screenshot({path:`${OUT}/09-end.png`});
+ const state=await page.evaluate(()=>({mode:forest.mode,time:forest.time,state:forest.state,frames:forest.renderer.frames}));if(state.mode!=='ended'||errors.length)throw Error(JSON.stringify({state,errors}));await writeFile(`${OUT}/recording.json`,JSON.stringify({state,errors},null,2));
+ await new Promise((resolve,reject)=>{const process=spawn('D:/Program Files/ffmpeg/ffmpeg-7.0.2-essentials_build/bin/ffmpeg.exe',['-y','-i',`${OUT}/first-interlude.webm`,'-vf','scale=1920:1080:flags=neighbor','-c:v','libx264','-preset','fast','-crf','18','-pix_fmt','yuv420p','-c:a','aac','-b:a','128k','-movflags','+faststart',`${OUT}/first-interlude.mp4`],{stdio:'ignore',windowsHide:true});process.on('error',reject);process.on('close',code=>code===0?resolve():reject(Error(`ffmpeg ${code}`)));});console.log('INTERLUDE VIDEO READY',JSON.stringify({state,errors}));
+}finally{await browser.close();}

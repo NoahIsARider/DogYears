@@ -5,7 +5,9 @@ const OUT='deliverables/story-checks';await mkdir(OUT,{recursive:true});
 const URL=process.argv.includes('--url')?process.argv[process.argv.indexOf('--url')+1]:'http://127.0.0.1:5174';
 const heroOnly=process.argv.includes('--hero-only');
 const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',args:['--enable-webgl','--ignore-gpu-blocklist']});
-const page=await browser.newPage({viewport:{width:1440,height:960}});const errors=[],checks=[],scenes=[];
+const recordDir=process.env.RECORD_DIR||null;
+const context=await browser.newContext({viewport:{width:1440,height:960},...(recordDir?{recordVideo:{dir:recordDir,size:{width:1440,height:960}}}:{})});
+const page=await context.newPage();const errors=[],checks=[],scenes=[];
 page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error'&&!m.text().includes('404'))errors.push(m.text());});
 const snap=()=>page.evaluate(()=>({mode:dogyears.mode,day:dogyears.state.day,active:dogyears.active?.id,hover:dogyears.hover?.id,ready:dogyears.chapterReady,state:dogyears.state}));
@@ -95,10 +97,13 @@ try{
   assert.equal((await snap()).ready,true);checks.push({day:chapter.day,required:chapter.required,ready:true});
   if(chapter.day===2){await page.keyboard.press('Escape');await mode('pause');await page.reload();await page.waitForFunction(()=>dogyears?.ready,null,{timeout:120000});await page.click('#begin');await mode('house');assert.equal((await snap()).ready,true,'Chapter progress must survive a reload');}
   if(chapter.day===6){await page.keyboard.press('KeyP');await mode('phone');await page.click('[data-thread="Mara"]');assert.match(await page.locator('.messages').innerText(),/hold this|Tell me which end/);await page.fill('#reply-text','Thank you. Tomorrow.');await page.click('#reply-form button');assert.equal((await snap()).state.replies.at(-1).delivered,true);await screenshot('06-phone-mara');await page.click('#phone-close');await mode('house');}
-  if(chapter.day<7){await aim('bed');await page.keyboard.press('KeyE');await mode('decision');await page.click('#sleep-now');await mode('house');assert.equal((await snap()).day,chapter.day+1);}
+  if(chapter.day<7){await aim('bed');await page.keyboard.press('KeyE');await mode('decision');await page.click('#sleep-now');await mode('house',130000);assert.equal((await snap()).day,chapter.day+1);}
  }
- await aim('back');await page.keyboard.press('KeyE');await mode('decision');await page.click('#leave-house');await mode('ending',15000);await page.waitForTimeout(6000);await screenshot('07-ending');assert.equal((await snap()).state.ending,'keys');
+ await aim('back');await page.keyboard.press('KeyE');await mode('decision');await page.click('#leave-house');await mode('ending',130000);await page.waitForTimeout(6000);await screenshot('07-ending');assert.equal((await snap()).state.ending,'keys');
  assert.equal(await page.evaluate(()=>/[\u3400-\u9fff]/.test(document.body.innerText)),false);assert.deepEqual(errors,[]);
- await writeFile(`${OUT}/report.json`,JSON.stringify({errors,checks,scenes,final:await snap()},null,2));console.log('STORY PLAYTHROUGH PASS',JSON.stringify({chapters:checks.length,scenes:scenes.length,errors}));
+ const finalSnap=await snap();
+ let video=null;
+ if(recordDir){video=await page.video()?.path();await context.close();}
+ await writeFile(`${OUT}/report.json`,JSON.stringify({errors,checks,scenes,final:finalSnap,video},null,2));console.log('STORY PLAYTHROUGH PASS',JSON.stringify({chapters:checks.length,scenes:scenes.length,errors}));
  }
 }catch(e){await screenshot('failure');await writeFile(`${OUT}/failure.json`,JSON.stringify({error:String(e),errors,snapshot:await snap(),checks,scenes},null,2));console.error(e);process.exitCode=1;}finally{await browser.close();}

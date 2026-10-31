@@ -1,4 +1,5 @@
 import {STORY_MESSAGES,getStoryMessages} from './story.js';
+import {normalizeInterlude} from './forest/journal.js';
 // The counter measures the pull of waiting, not the worth of a decision.
 export const SAVE_KEY = 'dogyears.save.v2';
 export const CHOICES = Object.freeze({
@@ -93,6 +94,7 @@ export function newGame() {
     decisions: {}, history: [], seenMemories: [], memoryActions: {},
     phoneRead: [], replies: [], waits: 0, inventory: [], ending: null,
     chapterVisits: [], sceneProgress: {}, discoveries: [], helped: false,
+    pendingInterlude: null, seenInterludes: [],
   };
 }
 
@@ -265,6 +267,8 @@ export function loadGame(storage = globalThis.localStorage) {
     clean.discoveries = Array.isArray(parsed.discoveries) ? [...new Set(parsed.discoveries.filter(id => typeof id === 'string').slice(0, 100))] : [];
     clean.helped = parsed.helped === true;
     if (parsed.phase === 'ending' && Object.hasOwn(ENDINGS, parsed.ending)) { clean.phase = 'ending'; clean.ending = parsed.ending; }
+    clean.seenInterludes=Array.isArray(parsed.seenInterludes)?[...new Set(parsed.seenInterludes.filter(id=>Number.isInteger(id)&&id>=1&&id<=7))]:[];
+    clean.pendingInterlude=normalizeInterlude(parsed.pendingInterlude,clean);
     return clean;
   } catch { return newGame(); }
 }

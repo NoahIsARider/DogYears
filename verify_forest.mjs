@@ -1,0 +1,35 @@
+import {chromium} from 'file:///C:/Users/Lenovo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
+import {mkdir,writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const OUT='deliverables/forest-v3';await mkdir(OUT,{recursive:true});
+const url=process.argv.includes('--url')?process.argv[process.argv.indexOf('--url')+1]:'http://127.0.0.1:5180/forest.html';
+const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'}),page=await browser.newPage({viewport:{width:1920,height:1080}}),errors=[],checks=[];
+page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400&&!r.url().endsWith('favicon.ico'))errors.push(`${r.status()} ${r.url()}`);});
+try{
+ await page.goto(url);await page.waitForFunction(()=>window.forest?.ready);await page.evaluate(()=>document.fonts.ready);
+ for(const [name,time]of [['01-enter',3],['02-walk',10],['03-reach',29],['04-leaves',31],['05-kneel',52],['06-study',55.5],['07-rise',60],['08-call',64.5],['09-unanswered',72],['10-far-forest',92]]){await page.evaluate(t=>forest.seek(t),time);await page.waitForTimeout(60);await page.evaluate(()=>{document.querySelector('#menu').hidden=true;document.querySelector('#curtain').style.opacity=0;document.querySelector('#keys').classList.remove('show');});await page.screenshot({path:`${OUT}/${name}.png`});const s=await page.evaluate(()=>forest.state);assert.equal(s.y,216);checks.push({name,time,state:s});}
+ const style=await page.evaluate(()=>{const c=document.querySelector('#scene'),d=c.getContext('2d').getImageData(0,0,c.width,c.height).data,colors=new Set();for(let i=0;i<d.length;i+=4)colors.add(`${d[i]},${d[i+1]},${d[i+2]}`);return {width:c.width,height:c.height,colors:colors.size,smoothing:forest.renderer.c.imageSmoothingEnabled,rect:{width:c.getBoundingClientRect().width,height:c.getBoundingClientRect().height},actor:forest.renderer.manifest.actor,assets:Object.keys(forest.renderer.sprites),worldWidth:forest.renderer.manifest.worldWidth};});
+ assert.equal(style.width,480);assert.equal(style.height,270);assert(style.colors<=48);assert.equal(style.smoothing,false);assert.equal(style.rect.width%480,0);assert.equal(style.actor.frames,40);assert(style.worldWidth>style.width*3);assert(checks.at(-1).state.camera>1000);
+
+ // Compare actual rendered pixels after a camera translation. With fog held off,
+ // every root, background landmark and ground pixel must move by the same amount.
+ const rooted=await page.evaluate(()=>{const r=forest.renderer,s={...forest.state,branch:0},fog=r.fog,initial=r.camera;r.fog=()=>{};r.camera=400;r.render(0,s,{paused:true});const a=r.ctx.getImageData(0,0,480,270).data;r.camera=416;r.render(0,s,{paused:true});const b=r.ctx.getImageData(0,0,480,270).data;let equal=0,total=0;for(let y=0;y<270;y++)for(let x=0;x<464;x++){const ia=(y*480+x+16)*4,ib=(y*480+x)*4;total++;if(a[ia]===b[ib]&&a[ia+1]===b[ib+1]&&a[ia+2]===b[ib+2])equal++;}r.fog=fog;r.camera=initial;return{equal,total,ratio:equal/total};});assert.equal(rooted.ratio,1,'a rooted sprite drifted against the ground');
+
+ // The full parent oak is already visible before the reach begins.
+ const contact=checks.find(x=>x.name==='04-leaves').state;assert(800-contact.camera>0&&800-contact.camera<480);assert.equal(contact.branch,1);
+ await page.evaluate(()=>forest.enter());await page.keyboard.press('Space');const frozen=await page.evaluate(()=>forest.time);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>forest.time),frozen);await page.keyboard.press('Space');await page.waitForTimeout(100);assert(await page.evaluate(()=>forest.time)>frozen);
+ // Start just before the leaves, then exercise the real keyboard/controller path.
+ await page.evaluate(()=>{forest.seek(24);forest.explore();});await page.keyboard.down('KeyD');await page.waitForTimeout(2100);await page.keyboard.up('KeyD');assert.equal(await page.evaluate(()=>forest.mode),'walk');assert.equal(await page.evaluate(()=>forest.state.x),622);
+ await page.keyboard.down('KeyE');await page.waitForTimeout(3200);await page.keyboard.up('KeyE');assert.equal(await page.evaluate(()=>forest.branchCleared),true);await page.waitForTimeout(1600);
+ await page.keyboard.down('KeyD');await page.waitForTimeout(1300);await page.keyboard.up('KeyD');assert(await page.evaluate(()=>forest.state.x)>645);
+ await page.keyboard.down('KeyQ');await page.waitForTimeout(2100);assert.equal(await page.evaluate(()=>forest.state.frame),19);await page.screenshot({path:`${OUT}/11-manual-look.png`});await page.keyboard.up('KeyQ');await page.waitForTimeout(2100);
+ // Reversing uses a reflected sprite and pause preserves the manual location.
+ await page.keyboard.down('KeyA');await page.waitForTimeout(350);await page.keyboard.up('KeyA');assert.equal(await page.evaluate(()=>forest.state.facing),-1);await page.keyboard.press('Space');const stopped=await page.evaluate(()=>forest.state.x);await page.waitForTimeout(200);assert.equal(await page.evaluate(()=>forest.state.x),stopped);const frozenScene=await page.evaluate(()=>({camera:forest.renderer.camera,pixels:document.querySelector('#scene').toDataURL()}));await page.waitForTimeout(250);assert.deepEqual(await page.evaluate(()=>({camera:forest.renderer.camera,pixels:document.querySelector('#scene').toDataURL()})),frozenScene);await page.keyboard.press('Space');
+
+ // Exercise the new interaction with real keyboard input through completion.
+ await page.evaluate(()=>{forest.seek(48);forest.explore();window.__calls=0;const call=forest.audio.whistle.bind(forest.audio);forest.audio.whistle=()=>{__calls++;call();};});
+ await page.keyboard.down('KeyD');await page.waitForTimeout(1000);await page.keyboard.up('KeyD');await page.keyboard.press('KeyE');await page.waitForFunction(()=>forest.state.pose==='study',{},{timeout:10000});await page.screenshot({path:`${OUT}/12-manual-tracks.png`});
+ await page.keyboard.press('Space');const pausedInspection=await page.evaluate(()=>forest.state.frame);await page.waitForTimeout(300);assert.equal(await page.evaluate(()=>forest.state.frame),pausedInspection);await page.keyboard.press('Space');
+ await page.waitForFunction(()=>forest.inspected,{},{timeout:18000});assert.equal(await page.evaluate(()=>__calls),1);await page.keyboard.down('KeyD');await page.waitForTimeout(350);await page.keyboard.up('KeyD');assert(await page.evaluate(()=>forest.state.x)>975);
+ assert.deepEqual(errors,[]);const report={errors,style,rooted,checks,manual:await page.evaluate(()=>({state:forest.state,branchCleared:forest.branchCleared,inspected:forest.inspected}))};await writeFile(`${OUT}/report.json`,JSON.stringify(report,null,2));console.log('FOREST V3 PASS',JSON.stringify({pixelGrid:[style.width,style.height],colors:style.colors,frames:style.actor.frames,cameraTravel:checks.at(-1).state.camera,rootMatch:rooted.ratio,errors}));
+}catch(error){await page.screenshot({path:`${OUT}/failure.png`});await writeFile(`${OUT}/failure.json`,JSON.stringify({error:String(error),errors,checks},null,2));console.error(error);process.exitCode=1;}finally{await browser.close();}

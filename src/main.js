@@ -5,6 +5,8 @@ import {HouseAudio} from './audio.js';
 import {OBJECTS,CHOICES,newGame,loadGame,saveGame,choose,wait,sleep,advanceTime,markMemory,canChoose,getMessages,markMessagesRead,reply,ending,finish,recordScene,discover} from './game.js';
 import {CHAPTERS,SCENES,DISCOVERIES,getScene,chapterReady,hasSceneVisit} from './story.js';
 import {MemorySequence} from './sequence.js';
+import {ForestFilm} from './forest/player.js';
+import {startInterlude,recordInterlude,closeInterlude} from './forest/journal.js';
 import './style.css';
 import './type.css';
 const $=s=>document.querySelector(s),escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -25,6 +27,9 @@ function unfinishedHint(){const id=chapter().required.find(id=>!hasSceneVisit(st
 const extras=[{id:'bed',kind:'rest',title:'The bed',prompt:'Rest until morning',position:[3.35,.72,3.58]},{id:'front',kind:'wait',title:'The front door',prompt:'Wait for the key',position:[0,1.3,5.9]},{id:'back',kind:'exit',title:'The back door',prompt:'Step outside',position:[0,1.3,-6.05]},{id:'mirror',kind:'mirror',title:'The mirror',prompt:'Look',position:[.81,1.64,4.88]},{id:'seat',kind:'wait',title:'The quiet chair',prompt:'Sit for a while',position:[3.2,.8,-3.2]}];
 try{world=new HouseWorld($('#world'),settings);control=new HouseControls(world.camera,$('#world'),settings);audio=new HouseAudio(settings);}catch(e){$('#overlay').innerHTML='<section class="menu visible"><h1>DogYears</h1><p>This house needs a browser with WebGL.</p><button onclick="location.reload()">Try again</button></section>';$('#overlay').classList.add('visible');throw e;}
 const camera=world.camera;
+let interludeBusy=false;
+const forestFilm=new ForestFilm({volume:settings.volume,muted:settings.muted,onProgress:({time})=>{if(mode==='interlude'&&state.pendingInterlude){state=recordInterlude(state,time);saveGame(state);}}});
+forestFilm.load().catch(error=>console.warn('Forest preload will retry when needed.',error.message));
 function setMode(m){mode=m;control.enabled=['house','memory'].includes(m);if(!control.enabled)control.reset();document.body.dataset.mode=m;}
 function unlock(){if(document.pointerLockElement)document.exitPointerLock();}
 function persist(){saveGame(state);try{localStorage.setItem('dogyears.view',JSON.stringify({position:camera.position.toArray(),yaw:control.yaw,pitch:control.pitch,day:state.day}));}catch{}$('#save-light').classList.add('on');setTimeout(()=>$('#save-light').classList.remove('on'),900);world.applyState(state);updateCounter();}
@@ -36,9 +41,9 @@ async function fade(work,ms=650){$('#fade').style.transitionDuration=`${ms}ms`;$
 function overlay(html){$('#overlay').innerHTML=html;$('#overlay').classList.toggle('visible',!!html);}
 function title(){setMode('title');unlock();$('#counter').hidden=true;$('#reticle').hidden=true;overlay(`<section class="title-menu"><h1>DogYears</h1><p class="title-line">Some afternoons last longer than others.</p><nav><button id="begin" ${ready?'':'disabled'}>${state.day>1||state.history.length||state.waits?'Continue':'Enter the house'}</button><button id="title-settings">Settings</button></nav><p class="loading">${ready?'':'Opening the house…'}</p></section>`);$('#begin').onclick=begin;$('#title-settings').onclick=()=>settingsMenu('title');}
 function restoreView(){try{const v=JSON.parse(localStorage.getItem('dogyears.view')||'null');if(v?.day===state.day&&Array.isArray(v.position)&&v.position.length===3&&v.position.every(Number.isFinite)&&Number.isFinite(v.yaw)&&Number.isFinite(v.pitch)&&canWalk(v.position[0],v.position[2])){camera.position.fromArray(v.position);camera.position.y=1.65;control.yaw=control.targetYaw=v.yaw;control.pitch=control.targetPitch=THREE.MathUtils.clamp(v.pitch,-1.25,1.25);camera.rotation.set(control.pitch,control.yaw,0,'YXZ');return;}}catch{}camera.position.set(0,1.65,5.35);control.lookAt([0,1.55,-5]);}
-async function begin(){if(!ready)return;overlay('');$('#counter').hidden=false;$('#reticle').hidden=false;updateCounter();restoreView();started=true;audio.unlock();if(state.phase==='ending'){showEnding(ending(state));return;}setMode('house');await control.lock();if(!document.pointerLockElement){pause('Click Resume to look around.');return;}if(!state.history.length&&!state.waits&&state.day===1){dayCard();hint('W A S D  move     Mouse  look     E  touch     Esc  pause',11);await delay(6500);if(mode==='house'&&state.day===1&&!state.seenMemories.length)thought('You said you would be back before the light changed.',6);}else hint('E  touch     P  phone     Esc  pause',5);}
+async function begin(){if(!ready)return;overlay('');$('#counter').hidden=false;$('#reticle').hidden=false;updateCounter();restoreView();started=true;audio.unlock();if(state.pendingInterlude){continueInterlude();return;}if(state.phase==='ending'){showEnding(ending(state));return;}setMode('house');await control.lock();if(!document.pointerLockElement){pause('Click Resume to look around.');return;}if(!state.history.length&&!state.waits&&state.day===1){dayCard();hint('W A S D  move     Mouse  look     E  touch     Esc  pause',11);await delay(6500);if(mode==='house'&&state.day===1&&!state.seenMemories.length)thought('You said you would be back before the light changed.',6);}else hint('E  touch     P  phone     Esc  pause',5);}
 function dayCard(){const el=$('#day-card');el.innerHTML=`<small>Day ${['one','two','three','four','five','six','seven'][state.day-1]}</small><span>${escapeHTML(chapter().title)}</span>`;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4500);}
-function pause(note=''){if(['transition','ending','title','decision'].includes(mode))return;if(mode==='phone'){$('#phone').classList.remove('visible');$('#phone').innerHTML='';}if(mode==='inspect'){world.clearInspection();active=null;}if(mode==='memory')memoryPaused=true;holding=false;setMode('pause');unlock();persist();$('#prompt').textContent='';overlay(`<section class="pause-menu"><small>DAY ${state.day}</small><h2>A moment.</h2>${note?`<p>${escapeHTML(note)}</p>`:''}<nav><button id="resume">Resume</button><button id="settings">Settings</button><button id="new">Begin again</button></nav><p class="controls-note">W A S D · Move<br>Mouse · Look<br>E · Touch / hold<br>R · Leave a memory<br>P · Phone<br>Esc · Pause</p></section>`);$('#resume').onclick=resume;$('#settings').onclick=()=>settingsMenu('pause');$('#new').onclick=confirmNew;}
+function pause(note=''){if(['transition','interlude','ending','title','decision'].includes(mode))return;if(mode==='phone'){$('#phone').classList.remove('visible');$('#phone').innerHTML='';}if(mode==='inspect'){world.clearInspection();active=null;}if(mode==='memory')memoryPaused=true;holding=false;setMode('pause');unlock();persist();$('#prompt').textContent='';overlay(`<section class="pause-menu"><small>DAY ${state.day}</small><h2>A moment.</h2>${note?`<p>${escapeHTML(note)}</p>`:''}<nav><button id="resume">Resume</button><button id="settings">Settings</button><button id="new">Begin again</button></nav><p class="controls-note">W A S D · Move<br>Mouse · Look<br>E · Touch / hold<br>R · Leave a memory<br>P · Phone<br>Esc · Pause</p></section>`);$('#resume').onclick=resume;$('#settings').onclick=()=>settingsMenu('pause');$('#new').onclick=confirmNew;}
 async function resume(){overlay('');setMode(memoryPaused?'memory':'house');memoryPaused=false;await control.lock();if(!document.pointerLockElement)pause('The mouse is not captured. Click Resume again.');}
 function confirmNew(){
  overlay(`<section class="pause-menu"><h2>Begin again?</h2><p>The days in this house will start over.</p><nav><button id="confirm-new">Begin again</button><button id="cancel-new">Stay here</button></nav></section>`);
@@ -109,14 +114,26 @@ function rest(){
  $('#choices').classList.add('visible');$('#stay-awake').onclick=closeDecision;
  $('#sleep-now').onclick=async()=>{
   $('#choices').classList.remove('visible');$('#choices').innerHTML='';if(last){endGame(false);return;}
-  setMode('transition');audio.cue('sleep');
-  await fade(()=>{state=sleep(state);camera.position.set(1.65,1.65,3.5);control.lookAt([3.5,.9,3.9]);persist();$('#day-card').innerHTML='';},1000);
-  setMode('house');await control.lock();if(!document.pointerLockElement)pause();dayCard();
-  if(state.day===7)audio.cue('knock');const morning=state.day;await delay(6500);if(mode==='house'&&state.day===morning)thought(chapter().opening,7);
+  audio.cue('sleep');state=startInterlude(state,'sleep');persist();forestFilm.audio.unlock();continueInterlude();
  };
 }
 function confirmExit(){setMode('decision');unlock();$('#choices').innerHTML='<div class="decision"><p>The key is in your pocket.</p><div><button id="leave-house">Open the door</button><button id="not-today">Stay a little longer</button></div></div>';$('#choices').classList.add('visible');$('#not-today').onclick=closeDecision;$('#leave-house').onclick=()=>{$('#choices').classList.remove('visible');$('#choices').innerHTML='';endGame(true);};}
-async function endGame(outside){setMode('transition');unlock();audio.cue('door');await fade(()=>{state=finish(state,outside);const result=ending(state);camera.position.set(0,1.65,result?.id==='porch'?-7.7:result?.outside?-10.5:4.9);control.lookAt(result?.outside||result?.id==='porch'?[0,1.4,-20]:[0,1.6,-5]);persist();},1200);showEnding(ending(state));}
+function endGame(outside){if(interludeBusy)return;audio.cue('door');state=startInterlude(state,'ending',outside);persist();forestFilm.audio.unlock();continueInterlude();}
+async function continueInterlude(){
+ if(interludeBusy||!state.pendingInterlude)return;interludeBusy=true;
+ const pending={...state.pendingInterlude};setMode('interlude');unlock();overlay('');world.ink.clear();holding=false;
+ clearTimeout(thoughtTimer);clearTimeout(hintTimer);clearTimeout(memoryLineTimer);
+ for(const id of ['choices','phone','day-card','hint','memory-hint','hold'])$('#'+id).classList.remove('show','visible');
+ $('#prompt').textContent='';$('#fade').classList.add('black');audio.setMuted(true);forestFilm.audio.setVolume(settings.volume);forestFilm.audio.setMuted(settings.muted);
+ try{await forestFilm.play(pending.episode,{time:pending.time,ending:ending(state,pending.outside)?.id||'keys'});}
+ catch(error){interludeBusy=false;$('#fade').classList.remove('black');overlay('<section class="pause-menu"><h2>The forest could not open.</h2><button id="retry-forest">Try again</button></section>');$('#retry-forest').onclick=continueInterlude;console.error(error);return;}
+ state=closeInterlude(state);audio.setMuted(settings.muted);setMode('transition');
+ if(pending.target==='sleep'){state=sleep(state);camera.position.set(1.65,1.65,3.5);control.lookAt([3.5,.9,3.9]);$('#day-card').innerHTML='';}
+ else{state=finish(state,pending.outside);const result=ending(state);camera.position.set(0,1.65,result?.id==='porch'?-7.7:result?.outside?-10.5:4.9);control.lookAt(result?.outside||result?.id==='porch'?[0,1.4,-20]:[0,1.6,-5]);}
+ persist();await delay(80);$('#fade').classList.remove('black');await delay(650);interludeBusy=false;
+ if(pending.target==='ending'){showEnding(ending(state));return;}
+ setMode('house');await control.lock();dayCard();if(state.day===7)audio.cue('knock');const morning=state.day;await delay(6500);if(mode==='house'&&state.day===morning)thought(chapter().opening,7);
+}
 async function showEnding(result){if(!result)return;setMode('ending');unlock();$('#counter').hidden=true;$('#reticle').hidden=true;overlay('');if(result.outside){state.time=1;audio.cue('phone');}await delay(1400);thought(result.line,7);await delay(4000);overlay(`<section class="ending-menu"><small>DOGYEARS</small><h2>${escapeHTML(result.title)}</h2><p>${escapeHTML(result.after)}</p><nav><button id="ending-phone">Read the message</button><button id="ending-again">Begin again</button></nav></section>`);$('#ending-phone').onclick=()=>openPhone(true);$('#ending-again').onclick=confirmNew;}
 function openPhone(fromEnding=false){
  if(!ready)return;world.clearInspection();if(fromEnding){overlay('');phoneThread='Mara';}setMode('phone');unlock();state=markMessagesRead(state);persist();
@@ -137,7 +154,7 @@ $('#world').addEventListener('click',()=>{if(mode==='house'||mode==='memory')con
 title();control.lookAt([0,1.55,-5]);world.load(e=>{const el=$('.loading');if(el)el.textContent=e.total?`Opening the house · ${Math.round(e.loaded/e.total*100)}%`:'Opening the house…';}).then(()=>{world.register(OBJECTS);world.applyState(state);ready=true;title();}).catch(e=>{overlay('<section class="pause-menu"><h2>The house could not open.</h2><p>Please check the local server and try again.</p><button onclick="location.reload()">Try again</button></section>');console.error(e);});
 let last=performance.now(),hoverClock=0,saveClock=0,lastRender=0;
 function frame(now){
- requestAnimationFrame(frame);const dt=Math.min((now-last)/1000,.05);last=now;control.update(dt);
+ requestAnimationFrame(frame);const dt=Math.min((now-last)/1000,.05);last=now;control.update(dt);if(mode==='interlude')return;
  if(mode==='house'){
   hoverClock+=dt;if(hoverClock>.07){prompt();hoverClock=0;}
   storyTimer+=dt;if(storyTimer>1){state=advanceTime(state,storyTimer/900);storyTimer=0;}
@@ -148,4 +165,4 @@ function frame(now){
  const live=['house','memory','inspect','transition'].includes(mode);if(!document.hidden&&(live||now-lastRender>100)){world.render();lastRender=now;}
 }
 requestAnimationFrame(frame);
-window.dogyears={get ready(){return ready;},get state(){return state;},get mode(){return mode;},world,scene:world.scene,camera,control,objects:OBJECTS,extras,discoveries,chapters:CHAPTERS,valid:canWalk,blocks:BLOCKS,get hover(){return hover;},get active(){return active;},get progress(){return progress;},get sequence(){return sequence;},get sceneScript(){return sceneScript;},get chapterReady(){return storyDayReady();}};
+window.dogyears={forestFilm,get ready(){return ready;},get state(){return state;},get mode(){return mode;},world,scene:world.scene,camera,control,objects:OBJECTS,extras,discoveries,chapters:CHAPTERS,valid:canWalk,blocks:BLOCKS,get hover(){return hover;},get active(){return active;},get progress(){return progress;},get sequence(){return sequence;},get sceneScript(){return sceneScript;},get chapterReady(){return storyDayReady();}};

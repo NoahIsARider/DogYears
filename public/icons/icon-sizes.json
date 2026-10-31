@@ -1,0 +1,68 @@
+[
+  {
+    "size": 16,
+    "transparent": 204,
+    "ratio": 0.796875,
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "size": 32,
+    "transparent": 813,
+    "ratio": 0.7939453125,
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "size": 48,
+    "transparent": 1829,
+    "ratio": 0.7938368055555556,
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "size": 64,
+    "transparent": 3393,
+    "ratio": 0.828369140625,
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "size": 128,
+    "transparent": 13572,
+    "ratio": 0.828369140625,
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "size": 256,
+    "transparent": 54288,
+    "ratio": 0.828369140625,
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+]

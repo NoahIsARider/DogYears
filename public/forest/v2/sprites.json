@@ -1,0 +1,388 @@
+{
+  "version": 2,
+  "native": [
+    480,
+    270
+  ],
+  "floor": 216,
+  "worldWidth": 1584,
+  "duration": 74,
+  "actor": {
+    "cell": [
+      48,
+      64
+    ],
+    "columns": 4,
+    "frames": 24,
+    "foot": 61,
+    "anchor": 24,
+    "bodyPixels": 54
+  },
+  "oak": {
+    "root": [
+      212,
+      254
+    ],
+    "pivot": [
+      204,
+      175
+    ],
+    "worldRoot": 800,
+    "backOffset": 0,
+    "boughRegion": [
+      0,
+      128,
+      204,
+      112
+    ],
+    "collar": [
+      184,
+      128,
+      44,
+      62
+    ]
+  },
+  "props": [
+    {
+      "name": "prop-0",
+      "width": 180,
+      "height": 240
+    },
+    {
+      "name": "prop-1",
+      "width": 180,
+      "height": 240
+    },
+    {
+      "name": "prop-2",
+      "width": 180,
+      "height": 240
+    },
+    {
+      "name": "prop-3",
+      "width": 116,
+      "height": 100
+    },
+    {
+      "name": "prop-4",
+      "width": 116,
+      "height": 100
+    },
+    {
+      "name": "prop-5",
+      "width": 160,
+      "height": 74
+    }
+  ],
+  "palette": [
+    "#17292e",
+    "#21383d",
+    "#2c4449",
+    "#385156",
+    "#455f63",
+    "#526c70",
+    "#607a7c",
+    "#70878a",
+    "#809698",
+    "#91a5a5",
+    "#a5b5b2",
+    "#bcc7bf",
+    "#d0d3c6",
+    "#dde0d1",
+    "#35433d",
+    "#46554b",
+    "#596657",
+    "#707864",
+    "#858b70",
+    "#9ba083",
+    "#4a4b43",
+    "#636051",
+    "#7a735e",
+    "#92866a",
+    "#a49a7b",
+    "#bab18d",
+    "#8a9284",
+    "#3c4c4d",
+    "#657a78",
+    "#829894",
+    "#a4b8b3",
+    "#c3d0c6",
+    "#221f23",
+    "#342d2d",
+    "#483c36",
+    "#5e4e42",
+    "#8d705c",
+    "#ae8b6d",
+    "#d0aa84",
+    "#e2bd94",
+    "#4c554d",
+    "#657160",
+    "#7e8872",
+    "#a1a58b",
+    "#363940",
+    "#4b4d52",
+    "#76563e",
+    "#9a7650"
+  ],
+  "assets": [
+    "woodland-long",
+    "ground-long",
+    "hunter-atlas",
+    "oak-body",
+    "oak-bough",
+    "oak-collar",
+    "prop-0",
+    "prop-1",
+    "prop-2",
+    "prop-3",
+    "prop-4",
+    "prop-5",
+    "fog",
+    "drop-atlas",
+    "shadow",
+    "leaf-atlas"
+  ],
+  "registration": [
+    {
+      "frame": 0,
+      "sourceHeight": 425,
+      "sourceWidth": 226,
+      "center": 204,
+      "bounds": {
+        "x": 11,
+        "y": 7,
+        "w": 29,
+        "h": 54
+      }
+    },
+    {
+      "frame": 1,
+      "sourceHeight": 426,
+      "sourceWidth": 163,
+      "center": 200,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 21,
+        "h": 54
+      }
+    },
+    {
+      "frame": 2,
+      "sourceHeight": 424,
+      "sourceWidth": 135,
+      "center": 187,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 17,
+        "h": 54
+      }
+    },
+    {
+      "frame": 3,
+      "sourceHeight": 426,
+      "sourceWidth": 212,
+      "center": 180,
+      "bounds": {
+        "x": 14,
+        "y": 7,
+        "w": 27,
+        "h": 54
+      }
+    },
+    {
+      "frame": 4,
+      "sourceHeight": 415,
+      "sourceWidth": 244,
+      "center": 212,
+      "bounds": {
+        "x": 9,
+        "y": 7,
+        "w": 32,
+        "h": 54
+      }
+    },
+    {
+      "frame": 5,
+      "sourceHeight": 419,
+      "sourceWidth": 160,
+      "center": 208,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 21,
+        "h": 54
+      }
+    },
+    {
+      "frame": 6,
+      "sourceHeight": 416,
+      "sourceWidth": 138,
+      "center": 196,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 18,
+        "h": 54
+      }
+    },
+    {
+      "frame": 7,
+      "sourceHeight": 419,
+      "sourceWidth": 230,
+      "center": 189,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 30,
+        "h": 54
+      }
+    },
+    {
+      "frame": 8,
+      "sourceHeight": 398,
+      "sourceWidth": 164,
+      "center": 165,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 22,
+        "h": 54
+      }
+    },
+    {
+      "frame": 9,
+      "sourceHeight": 398,
+      "sourceWidth": 167,
+      "center": 155,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 23,
+        "h": 54
+      }
+    },
+    {
+      "frame": 10,
+      "sourceHeight": 398,
+      "sourceWidth": 162,
+      "center": 149,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 22,
+        "h": 54
+      }
+    },
+    {
+      "frame": 11,
+      "sourceHeight": 398,
+      "sourceWidth": 166,
+      "center": 146,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 23,
+        "h": 54
+      }
+    },
+    {
+      "frame": 12,
+      "sourceHeight": 396,
+      "sourceWidth": 166,
+      "center": 162,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 23,
+        "h": 54
+      }
+    },
+    {
+      "frame": 13,
+      "sourceHeight": 395,
+      "sourceWidth": 191,
+      "center": 152,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 26,
+        "h": 54
+      }
+    },
+    {
+      "frame": 14,
+      "sourceHeight": 395,
+      "sourceWidth": 207,
+      "center": 149,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 28,
+        "h": 54
+      }
+    },
+    {
+      "frame": 15,
+      "sourceHeight": 395,
+      "sourceWidth": 215,
+      "center": 146,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 29,
+        "h": 54
+      }
+    },
+    {
+      "frame": 16,
+      "sourceHeight": 394,
+      "sourceWidth": 166,
+      "center": 161,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 23,
+        "h": 54
+      }
+    },
+    {
+      "frame": 17,
+      "sourceHeight": 395,
+      "sourceWidth": 169,
+      "center": 155,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 23,
+        "h": 54
+      }
+    },
+    {
+      "frame": 18,
+      "sourceHeight": 394,
+      "sourceWidth": 169,
+      "center": 152,
+      "bounds": {
+        "x": 15,
+        "y": 7,
+        "w": 23,
+        "h": 54
+      }
+    },
+    {
+      "frame": 19,
+      "sourceHeight": 394,
+      "sourceWidth": 178,
+      "center": 158,
+      "bounds": {
+        "x": 13,
+        "y": 7,
+        "w": 24,
+        "h": 54
+      }
+    }
+  ],
+  "authorship": "Original image_gen pixel sprites using INDIKA only as visual-language reference; source images and prompts under reference/forest/v2. PNG sprite layers are registered and rendered on one native pixel grid."
+}

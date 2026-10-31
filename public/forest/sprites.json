@@ -1,0 +1,62 @@
+{
+  "native": [
+    384,
+    216
+  ],
+  "floor": 164,
+  "actor": {
+    "cell": [
+      32,
+      48
+    ],
+    "columns": 4,
+    "frames": 24,
+    "foot": 44,
+    "headPixels": 6
+  },
+  "palette": [
+    "#17292e",
+    "#21383d",
+    "#2c4449",
+    "#385156",
+    "#455f63",
+    "#526c70",
+    "#607a7c",
+    "#70878a",
+    "#809698",
+    "#91a5a5",
+    "#a5b5b2",
+    "#bcc7bf",
+    "#d0d3c6",
+    "#dde0d1",
+    "#35433d",
+    "#46554b",
+    "#596657",
+    "#707864",
+    "#858b70",
+    "#9ba083",
+    "#4a4b43",
+    "#636051",
+    "#7a735e",
+    "#92866a",
+    "#a49a7b",
+    "#bab18d",
+    "#8a9284",
+    "#3c4c4d",
+    "#657a78",
+    "#829894",
+    "#a4b8b3",
+    "#c3d0c6"
+  ],
+  "assets": [
+    "background",
+    "foreground",
+    "hunter-atlas",
+    "branch-atlas",
+    "fog",
+    "drop-atlas",
+    "shadow",
+    "leaf-atlas"
+  ],
+  "authorship": "Background and foreground generated with image_gen using INDIKA only as visual-language reference; original hunter and effect atlases drawn at native pixel resolution by the project. No INDIKA pixels are shipped."
+}

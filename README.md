@@ -24,7 +24,9 @@ A playable first-person narrative game about the afternoons after a loss.
 
 ![An ending](screenshots/08-ending.jpg)
 
-Open **http://localhost:5174/** while the local server is running. To start the built version later, run `pnpm build` once and then double-click **启动游戏.cmd** (requires Node.js). All player-facing text is English. There is no model-viewer sidebar or room-selection interface in the game.
+Open **http://localhost:5174/** while the local server is running. To start the built version later, run `pnpm build` once and then double-click **Start DogYears.cmd** (requires Node.js). All player-facing text is English. There is no model-viewer sidebar or room-selection interface in the game.
+
+The transparent full-body deer desktop icon is bundled at `dist/icons/DogYears.ico`. To apply it to a Windows shortcut, open the shortcut's Properties, choose Change Icon and select that ICO file.
 
 ## Playing
 
@@ -32,7 +34,8 @@ Open **http://localhost:5174/** while the local server is running. To start the 
 - **E** — touch an object. While holding it, drag to turn it; **E** enters the memory, **R** puts it down.
 - In memories, approach the indicated part of the room and **hold E** for a physical gesture. Release E between gestures. **R** leaves early.
 - Decide whether to leave an object, make room, or take it with you. The room changes with the decision.
-- The bed advances to the next morning. The front door and quiet chair let you wait.
+- The bed starts a wordless pixel forest interlude, then advances to the next morning. The front door and quiet chair let you wait.
+- During forest films, Esc pauses and holding Space skips. Playback resumes after a reload. The films follow your sound settings.
 - **P** — read the old phone. Ellis's archive and Mara's living conversation have separate threads.
 - **Esc** — pause, change settings, or begin again. Saves are local to this browser.
 
@@ -43,6 +46,10 @@ Mouse sensitivity, field of view, mouse smoothing, sound and reduced graphics ar
 Seven authored chapters contain twenty staged memories, eight keepsakes, twenty-four optional household observations, evolving messages, three object decisions and five endings. The same room and gesture acquire different meanings as the week progresses. The day-five attempt to finish a miniature leads to a concrete request for help and the last-day act of holding a door for a living friend. The playable screenplay is in `src/story.js`; narrative direction and revisions are in `docs/STORY.md`.
 
 Narrative lines occupy three-dimensional space near their objects, with parallax, depth occlusion and short reading intervals. There is no mission panel, checklist, room-selection interface or screen progress bar. The phone, pause screen and object decisions retain minimal functional interfaces.
+
+## Forest interludes
+
+Seven wordless pixel films follow the hunter through the same cold woodland, an empty shelter, failed attempts to hold a loose board, a small repair and a gate. Small birds and rabbits inhabit the background; the final film ends with the hunter and a deer looking at each other, held as a still image for six seconds. They total 8 minutes 54 seconds and play inside the chapter transitions without titles, instructions or menus. A separate review reel is available at `/interludes.html?chapter=2&reel=1`; the approved first scene also retains its walking preview at `/forest.html`. Details, original asset provenance and test scope are in `docs/FOREST_PREVIEW.md`.
 
 ## Typography
 
@@ -64,10 +71,12 @@ The house has connected rooms and a walkable back garden. The scenery includes a
 - `public/environment/`, `public/art/` — the photographed HDR environment and the watercolour hung in the house.
 - `screenshots/` — the running-game captures used above.
 - `THIRD_PARTY_ART.md` — model, material and environment credits and licences.
-- `tests/` — narrative state, save migration and discovery unit tests.
+- `src/forest/` — the interlude player, renderer, audio, timeline and the seven episodes; `public/forest/saga/` holds the sprite atlases and palettes it draws with.
+- `forest.html`, `interludes.html` — the standalone walking preview and the review reel for the films.
+- `tests/` — narrative state, save migration, discovery and forest timeline unit tests.
 - `docs/` — story direction and the notes for each revision.
 - `tools/` — the type comparison harness and asset helpers.
-- `serve.mjs`, `package_game.mjs`, `启动游戏.cmd`, `启动参观.cmd` — the local static server and the packaging step for `release/DogYears`.
+- `serve.mjs`, `package_game.mjs`, `Start DogYears.cmd`, `Start Viewer.cmd`, `Start DogYears.vbs` — the local static server, the two Windows launchers and the packaging step for `release/DogYears`.
 
 The Blender sources (`DogYears_ArtPass.blend` and the earlier house and game scenes), the downloaded third-party scans and the superseded GLB exports are not tracked here. They are large binary working files that live beside the repository on the build machine. Everything needed to run the game and to rebuild its JavaScript is in this repository.
 
@@ -77,7 +86,11 @@ The Blender sources (`DogYears_ArtPass.blend` and the earlier house and game sce
 
 `node verify_story.mjs` plays all twenty scenes in order using ordinary keyboard movement, real action durations and chapter transitions. It also checks disposed-object anchors, save/reload, asking Mara for help and the final arrival. `node verify_art.mjs` checks the running art asset, room views, spatial text bounds, fonts and environment lighting. `node verify_game.mjs --metrics` records frame-time samples. The older default game script predates chapter gating; use the story script for current progression coverage. Browser scripts use this machine's bundled Playwright runtime and installed Chrome; adjust their paths on another machine.
 
-For a separate built-game server, run `node serve.mjs --port 5175`; browser checks accept `--url http://127.0.0.1:5175`. `verify_story.mjs --hero-only` replays the fifth- and sixth-day miniature scenes, including packing, unpacking and the animated door. `node package_game.mjs` packages the current build under `release/DogYears`, keeping obsolete model exports out of that folder. `dist/` is not tracked, so run `pnpm build` once before using `启动游戏.cmd`.
+For a separate built-game server, run `node serve.mjs --port 5175`; browser checks accept `--url http://127.0.0.1:5175`. `verify_story.mjs --hero-only` replays the fifth- and sixth-day miniature scenes, including packing, unpacking and the animated door. `node package_game.mjs` packages the current build under `release/DogYears`, keeping obsolete model exports out of that folder. `dist/` is not tracked, so run `pnpm build` once before using `Start DogYears.cmd`.
+
+`RECORD_DIR=deliverables/playthrough node verify_story.mjs --url http://127.0.0.1:5175` runs the same twenty-scene playthrough and also writes a video of it, including every forest interlude at its real duration. The recording is WebM from the bundled Playwright browser and needs `npx playwright install ffmpeg` once.
+
+`node record_interludes.mjs` re-records the films on their own at four times the native canvas size; `node record_forest.mjs` and `node record_wildlife_saga.mjs` cover the earlier preview and the wildlife sheets.
 
 Blender renders are material reviews. Delivery screenshots come from the running game because its real-time lighting differs.
 
