@@ -44,6 +44,27 @@ Open **http://localhost:5174/** while the local server is running. To start the 
 
 The transparent full-body deer desktop icon is bundled at `dist/icons/DogYears.ico`. To apply it to a Windows shortcut, open the shortcut's Properties, choose Change Icon and select that ICO file.
 
+## Desktop build
+
+`desktop-app/` wraps the same build in an Electron window. The game needs to be served over HTTP —
+ES modules, `fetch` for the glTF asset and the sprite sheets, pointer lock for the first-person
+controls — so `main.cjs` starts a loopback server for its own `dist/` folder and points the window
+at `127.0.0.1`. Nothing is exposed beyond the machine.
+
+```
+pnpm build
+cp -r dist desktop-app/dist            # then keep only models/DogYears_ArtPass_Hero.glb
+cd desktop-app && npm install
+electron .                              # run it
+npm run package                         # release/desktop/DogYears-win32-x64
+```
+
+`node verify_desktop.mjs` launches the packaged exe over the DevTools protocol and checks that the
+window opens, the glTF and the forest sprite manifest are served, walking mode is reachable, the
+pause menu writes a save and a reload restores it. The packaged Windows folder is attached to the
+GitHub releases; the Electron runtime makes it about 400 MB unpacked, which is why it is not in the
+repository.
+
 ## Playing
 
 - **W A S D** — walk; **mouse** — look. **Shift** slows your steps.
@@ -91,6 +112,7 @@ The house has connected rooms and a walkable back garden. The scenery includes a
 - `forest.html`, `interludes.html` — the standalone walking preview and the review reel for the films.
 - `tests/` — narrative state, save migration, discovery and forest timeline unit tests.
 - `docs/` — story direction and the notes for each revision.
+- `desktop-app/` — the Electron shell (`main.cjs` plus its own `package.json`); `dist/` and `node_modules/` inside it are build output.
 - `tools/` — the type comparison harness and asset helpers.
 - `serve.mjs`, `package_game.mjs`, `Start DogYears.cmd`, `Start Viewer.cmd`, `Start DogYears.vbs` — the local static server, the two Windows launchers and the packaging step for `release/DogYears`.
 

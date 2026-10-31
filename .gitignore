@@ -16,3 +16,6 @@ public/models/*.glb
 Thumbs.db
 
 .page.html
+desktop-app/node_modules/
+desktop-app/dist/
+release/desktop/

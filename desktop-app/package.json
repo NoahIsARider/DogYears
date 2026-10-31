@@ -1,0 +1,18 @@
+{
+  "name": "dogyears-desktop",
+  "productName": "DogYears",
+  "version": "0.5.0",
+  "description": "DogYears — a playable first-person narrative game about the afternoons after a loss.",
+  "main": "main.cjs",
+  "author": "Noah Chou",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-packager . DogYears --platform=win32 --arch=x64 --out=../release/desktop --overwrite --asar --prune=true --app-version=0.5.0"
+  },
+  "dependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^45.2.1"
+  }
+}
